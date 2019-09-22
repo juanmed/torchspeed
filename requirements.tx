@@ -1,5 +1,5 @@
 numpy
-matplotlib
-torch
-cupy-cuda100
+#matplotlib
+torch-1.2.0a0+8554416-cp36-cp36m-linux_aarch64.whl
+cupy
 SpeedTorch
