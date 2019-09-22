@@ -1,6 +1,6 @@
 # torchspeed
 
-From  [here](https://devblogs.nvidia.com/how-optimize-data-transfers-cuda-cc/) and here:
+From  [here](https://devblogs.nvidia.com/how-optimize-data-transfers-cuda-cc/) and [here](https://pytorch.org/docs/master/notes/cuda.html):
 
 - Minimize the amount of data transferred between host and device when possible, even if that means running kernels on the GPU that get little or no speed-up compared to running them on the host CPU.
 - Higher bandwidth is possible between the host and the device when using page-locked (or “pinned”) memory.
