@@ -14,8 +14,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-cpu = 'Intel Core i5-8400 CPU @ 2.80GHz x 6'
-gpu = 'GeForce GTX 1050 Ti/PCIe/SSE2'
+#cpu = 'Intel Core i5-8400 CPU @ 2.80GHz x 6'
+cpu = 'ARMv8 Processor rev 1 (v8l) x 4' 
+#gpu = 'GeForce GTX 1050 Ti/PCIe/SSE2'
+gpu = 'NVIDIA Tegra X1 (nvgpu)'
 
 a = np.array([1.,1.,1.], dtype = np.float16)
 b = np.array([1.,2.,3.], dtype = np.float32)
@@ -215,8 +217,8 @@ for i in range(loops):
         end10 = torch.cuda.Event(enable_timing=True)
         torch.cuda.synchronize()
         start10.record()
-        cpu_pinned1.insertData(dataObject = xgpu, indexes=(slice(0,6), slice(0,3)))
-        #xgpu[:] =cpu_pinned1.getData( indexes = (slice(0,6),slice(0,3)) )
+        #cpu_pinned1.insertData(dataObject = xgpu, indexes=(slice(0,6), slice(0,3)))
+        xgpu[:] =cpu_pinned1.getData( indexes = (slice(0,6),slice(0,3)) )
         end10.record()
         torch.cuda.synchronize()
         storch_cpu_pinned_create_times.append(start10.elapsed_time(end10))
