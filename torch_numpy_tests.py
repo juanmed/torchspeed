@@ -12,7 +12,7 @@ torch.set_default_dtype(torch.float64)
 #torch.set_default_tensor_type(torch.FloatTensor)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
 
-fig = plt.figure()
+fig = plt.figure(figsize = (20,10))
 ax = fig.add_subplot(1,1,1)
 cpu = 'Intel Core i5-8400 CPU @ 2.80GHz x 6'
 gpu = 'GeForce GTX 1050 Ti/PCIe/SSE2'
@@ -31,7 +31,7 @@ x = np.float16(np.random.rand())
 #z = np.random.rand().astype(np.float64)
 #print(x,y,z)
 
-loops = 1000
+loops = 10000
 array_trans_times = []
 value_trans_times = []
 matrix_trans_times = []
@@ -206,6 +206,7 @@ for i in range(loops):
         torch.cuda.synchronize()
         start9.record()
         j_cuda = pytorchCPUpinned.to(device)
+        #excess = j_cuda.cpu()
         end9.record()
         torch.cuda.synchronize()
         cpu_pinned_create_times.append(start9.elapsed_time(end9))
@@ -215,8 +216,8 @@ for i in range(loops):
         end10 = torch.cuda.Event(enable_timing=True)
         torch.cuda.synchronize()
         start10.record()
-        cpu_pinned1.insertData(dataObject = xgpu, indexes=(slice(0,6), slice(0,3)))
-        #xgpu[:] =cpu_pinned1.getData( indexes = (slice(0,6),slice(0,3)) )
+        xgpu[:] =cpu_pinned1.getData( indexes = (slice(0,6),slice(0,3)) )
+        #cpu_pinned1.insertData(dataObject = xgpu, indexes=(slice(0,6), slice(0,3)))
         end10.record()
         torch.cuda.synchronize()
         storch_cpu_pinned_create_times.append(start10.elapsed_time(end10))
@@ -226,7 +227,8 @@ logx = True
 logy = False
 array_times = pd.DataFrame(array_trans_times, columns = ['6x 3-np.array'])
 array_times['6x 3-np.array'] = array_times['6x 3-np.array']
-array_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, title = 'Transfer Times for float64\n{} CPU\n {} GPU'.format(cpu,gpu), color = 'r', alpha  = 0.5)#, xlim = (0.01,1.0))
+ax = array_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, title = 'Transfer Times for float64\n{} CPU\n {} GPU'.format(cpu,gpu), color = 'r', alpha  = 0.5)#, xlim = (0.01,1.0))
+ax.set_xlabel("CPU -> GPU Transfer times {ms}")
 print("Numpy Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(array_trans_times), np.mean(array_trans_times), np.std(array_trans_times), np.max(array_trans_times), np.min(array_trans_times)))
 
 matrix_times = pd.DataFrame(matrix_trans_times, columns = ['6x3np.array'])
