@@ -14,8 +14,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 fig = plt.figure(figsize = (20,10))
 ax = fig.add_subplot(1,1,1)
-cpu = 'Intel Core i5-8400 CPU @ 2.80GHz x 6'
-gpu = 'GeForce GTX 1050 Ti/PCIe/SSE2'
+#cpu = 'Intel Core i5-8400 CPU @ 2.80GHz x 6'
+cpu = 'ARMv8 Processor rev 1 (v8l) x 4' 
+#gpu = 'GeForce GTX 1050 Ti/PCIe/SSE2'
+gpu = 'NVIDIA Tegra X1 (nvgpu)'
 
 a = np.array([1.,1.,1.], dtype = np.float16)
 b = np.array([1.,2.,3.], dtype = np.float32)
@@ -225,6 +227,8 @@ for i in range(loops):
 
 logx = True
 logy = False
+
+"""
 array_times = pd.DataFrame(array_trans_times, columns = ['6x 3-np.array'])
 array_times['6x 3-np.array'] = array_times['6x 3-np.array']
 ax = array_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, title = 'Transfer Times for float64\n{} CPU\n {} GPU'.format(cpu,gpu), color = 'r', alpha  = 0.5)#, xlim = (0.01,1.0))
@@ -266,7 +270,7 @@ cupymatrix_times = pd.DataFrame(cupy_matrix_create_times, columns = ['6x3 cupy(r
 cupymatrix_times['6x3 cupy(rand)'] = cupymatrix_times[cupymatrix_times['6x3 cupy(rand)'] < 1.0]
 cupymatrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'orange', alpha  = 0.5)
 print("CUPYMat Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(cupy_matrix_create_times), np.mean(cupy_matrix_create_times), np.std(cupy_matrix_create_times), np.max(cupy_matrix_create_times), np.min(cupy_matrix_create_times)))
-
+"""
 cpu_pinned_matrix_times = pd.DataFrame(cpu_pinned_create_times, columns = ['6x3 cpu pinned'])
 cpu_pinned_matrix_times['6x3 cpu pinned'] = cpu_pinned_matrix_times[cpu_pinned_matrix_times['6x3 cpu pinned'] < 1.0]
 cpu_pinned_matrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'pink', alpha  = 0.5)
@@ -275,7 +279,7 @@ print("CPU Pinned Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format
 
 cpu_pinned_st_matrix_times = pd.DataFrame(storch_cpu_pinned_create_times, columns = ['6x3 CPUPinn ST'])
 cpu_pinned_st_matrix_times['6x3 CPUPinn ST'] = cpu_pinned_st_matrix_times[cpu_pinned_st_matrix_times['6x3 CPUPinn ST'] < 1.0]
-cpu_pinned_st_matrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'turquoise', alpha  = 0.5)
+cpu_pinned_st_matrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'turquoise', alpha  = 0.5, title = 'Transfer Times for float64\n{} CPU\n {} GPU'.format(cpu,gpu))
 print("ST CPU Pinned: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(storch_cpu_pinned_create_times), np.mean(storch_cpu_pinned_create_times), np.std(storch_cpu_pinned_create_times), np.max(storch_cpu_pinned_create_times), np.min(storch_cpu_pinned_create_times)))
 
 
