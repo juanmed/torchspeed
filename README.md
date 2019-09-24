@@ -8,3 +8,7 @@ From  [here](https://devblogs.nvidia.com/how-optimize-data-transfers-cuda-cc/) a
 - Data transfers between the host and device can sometimes be overlapped with kernel execution and other data transfers.
 - Host to GPU copies are much faster when they originate from pinned (page-locked) memory. CPU tensors and storages expose a pin_memory() method, that returns a copy of the object, with data put in a pinned region.
 - Also, once you pin a tensor or storage, you can use asynchronous GPU copies. Just pass an additional non_blocking=True argument to a to() or a cuda() call. This can be used to overlap data transfers with computation.
+
+
+![alt tag](https://github.com/juanmed/torchspeed/blob/master/media/desktop_cpugpu_transfer.jpg)
+
