@@ -10,5 +10,5 @@ From  [here](https://devblogs.nvidia.com/how-optimize-data-transfers-cuda-cc/) a
 - Also, once you pin a tensor or storage, you can use asynchronous GPU copies. Just pass an additional non_blocking=True argument to a to() or a cuda() call. This can be used to overlap data transfers with computation.
 
 
-![alt tag](https://github.com/juanmed/torchspeed/blob/master/media/desktop_cpugpu_transfer.jpg)
+![alt tag](https://github.com/juanmed/torchspeed/blob/master/media/desktop_cpugpu_transfer.png)
 
