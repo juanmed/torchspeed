@@ -6,6 +6,7 @@ plt.show()
 
 import torch
 from torch.autograd import grad
+from tqdm import tqdm
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -30,7 +31,7 @@ def cost(m, g, P, windy = False):
     qt = source ; pt = P
     qts = [qt]
 
-    for it in range(15) : # Simple Euler scheme
+    for it in range(10) : # Simple Euler scheme
         [dq,dp] = grad(Emec(qt,pt), [qt,pt], create_graph=True)
         if windy :
             dq += qt[1] * 20 * (torch.randn(2, requires_grad = True).to(device))
@@ -47,11 +48,14 @@ P = torch.tensor( [60., 30.], requires_grad = True).to(device)
 fig = plt.figure(figsize=(10,5))
 ax = fig.add_subplot(111, aspect='equal')
 
-GRAV = True
-WIND = True
+GRAV = False
+WIND = False
+if GRAV:
+    lr = .1
+else:
+    lr = 5. 
 
-lr = .1
-for it in range(101):
+for it in tqdm(range(101)):
     C, qts = cost(m,g,P, WIND)
 
     if GRAV:
@@ -99,5 +103,6 @@ for it in range(101):
     elif WIND == True : suff = "windy"
     else :              suff = "simple"
     plt.savefig("output/OC_"+suff+"_"+str(it)+".png")
+    print("Momentum: {}".format(P.data.cpu().numpy()))
 
 plt.show(block=True)

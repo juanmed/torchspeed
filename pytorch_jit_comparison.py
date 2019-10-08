@@ -13,12 +13,10 @@ torch.set_default_dtype(torch.float32)
 @torch.jit.script
 def addcmul(i, v, t1, s, r):
     # type: (Tensor, float, Tensor, Tensor, Tensor) -> Tensor
-
     return i.addcmul(tensor1 = t1, tensor2 = s - r, value =v).sum(dim = 0)
 
 def addcmulp(i, v, t1, s, r):
     # type: (Tensor, float, Tensor, Tensor) -> Tensor
-    
     return torch.addcmul(i, v, t1, s - r).sum(dim = 0)
 
 
@@ -230,10 +228,11 @@ def main():
 
     logx = True
     logy = True
-    n1 = 'addcmul_jit'
+    n1 = 'addcmul_jit_gpu'
     array_times = pd.DataFrame(array_trans_times, columns = [n1])
     array_times[n1] = array_times[ array_times[n1] < array_times[n1].quantile(0.99)]
-    array_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, title = 'Operation speed: JIT vs Python\n{} CPU\n {} GPU'.format(cpu,gpu), color = 'r', alpha  = 0.5, xlim = (0.001,1.0))
+    ax = array_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, title = 'Operation speed: JIT vs Python\n{} CPU\n {} GPU'.format(cpu,gpu), color = 'r', alpha  = 0.5)#, xlim = (0.001,1.0))
+    ax.set_xlabel("Execution time {ms}")
     print("addcmul_jit Times: points: {}, mean: {}, std: {}, max: {}, min: {}, 25p: {}, 50p: {}, 75p: {}, 90p: {}, 99p: {}".format(len(array_trans_times),
                                                                                                  np.mean(array_trans_times), 
                                                                                                  np.std(array_trans_times), 
@@ -246,19 +245,19 @@ def main():
                                                                                                  np.percentile(array_trans_times, 99)))
 
    
-    n2 = 'addcmul_py'
+    n2 = 'addcmul_nojit_gpu'
     matrix_times = pd.DataFrame(matrix_trans_times, columns = [n2])
     matrix_times[n2] = matrix_times[ matrix_times[n2] < matrix_times[n2].quantile(0.99)]
     matrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'g', alpha  = 0.5)
     print("addcmul_py Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(matrix_trans_times), np.mean(matrix_trans_times), np.std(matrix_trans_times), np.max(matrix_trans_times), np.min(matrix_trans_times)))
 
-    n3 = 'addcmulx5_gpu'
-    value_times = pd.DataFrame(value_trans_times, columns = [n3])
-    value_times[n3] = value_times[ value_times[n3] < value_times[n3].quantile(0.99)]
-    value_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'b', alpha  = 0.5)
-    print("addcmulx5 gpu Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(value_trans_times), np.mean(value_trans_times), np.std(value_trans_times), np.max(value_trans_times), np.min(value_trans_times)))
+    #n3 = 'addcmulx5_gpu'
+    #value_times = pd.DataFrame(value_trans_times, columns = [n3])
+    #value_times[n3] = value_times[ value_times[n3] < value_times[n3].quantile(0.99)]
+    #value_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'b', alpha  = 0.5)
+    #print("addcmulx5 gpu Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(value_trans_times), np.mean(value_trans_times), np.std(value_trans_times), np.max(value_trans_times), np.min(value_trans_times)))
 
-    n4 = 'addcmulx5_cpu'
+    n4 = 'addcmul_cpu'
     direct_times = pd.DataFrame(direct_trans_times, columns = [n4])
     direct_times[n4] = direct_times[ direct_times[n4] < direct_times[n4].quantile(0.99)]
     direct_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'm', alpha  = 0.5)

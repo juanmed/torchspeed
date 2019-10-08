@@ -14,10 +14,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 fig = plt.figure(figsize = (20,10))
 ax = fig.add_subplot(1,1,1)
-#cpu = 'Intel Core i5-8400 CPU @ 2.80GHz x 6'
-cpu = 'ARMv8 Processor rev 1 (v8l) x 4' 
-#gpu = 'GeForce GTX 1050 Ti/PCIe/SSE2'
-gpu = 'NVIDIA Tegra X1 (nvgpu)'
+cpu = 'Intel Core i5-8400 CPU @ 2.80GHz x 6'
+#cpu = 'ARMv8 Processor rev 1 (v8l) x 4' 
+gpu = 'GeForce GTX 1050 Ti/PCIe/SSE2'
+#gpu = 'NVIDIA Tegra X1 (nvgpu)'
 
 a = np.array([1.,1.,1.], dtype = np.float16)
 b = np.array([1.,2.,3.], dtype = np.float32)
@@ -108,6 +108,7 @@ for i in range(loops):
         torch.cuda.synchronize()
         matrix_trans_times.append(start2.elapsed_time(end2))
 
+        """
         #Create 6 3xarrays in device
         start3 = torch.cuda.Event(enable_timing=True)
         end3 = torch.cuda.Event(enable_timing=True)
@@ -191,6 +192,7 @@ for i in range(loops):
         cp.cuda.Device().synchronize()
         torch.cuda.synchronize()
         cupy_matrix_create_times.append(start8.elapsed_time(end8))
+        """
 
         # create 6x3 pinned CPU tensor and transfer to GPU
         #j_cuda = pytorchCPUpinned.to(device)        
@@ -215,19 +217,19 @@ for i in range(loops):
         #cpu_pinned_create_times.append(start9.elapsed_time(end9))
 
         # transfer a 6x3 speedtorch slice to a Pytorch GPU Tensor
-        start10 = torch.cuda.Event(enable_timing=True)
-        end10 = torch.cuda.Event(enable_timing=True)
-        torch.cuda.synchronize()
-        start10.record()
-        xgpu[:] =cpu_pinned1.getData( indexes = (slice(0,6),slice(0,3)) )
+        #start10 = torch.cuda.Event(enable_timing=True)
+        #end10 = torch.cuda.Event(enable_timing=True)
+        #torch.cuda.synchronize()
+        #start10.record()
+        #xgpu[:] =cpu_pinned1.getData( indexes = (slice(0,6),slice(0,3)) )
         #cpu_pinned1.insertData(dataObject = xgpu, indexes=(slice(0,6), slice(0,3)))
-        end10.record()
-        torch.cuda.synchronize()
-        storch_cpu_pinned_create_times.append(start10.elapsed_time(end10))
+        #end10.record()
+        #torch.cuda.synchronize()
+        #storch_cpu_pinned_create_times.append(start10.elapsed_time(end10))
 
 
 logx = True
-logy = False
+logy = True
 
 
 array_times = pd.DataFrame(array_trans_times, columns = ['6x 3-np.array'])
@@ -241,6 +243,7 @@ matrix_times['6x3np.array'] = matrix_times['6x3np.array']
 matrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'g', alpha  = 0.5)
 print("Matrix Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(matrix_trans_times), np.mean(matrix_trans_times), np.std(matrix_trans_times), np.max(matrix_trans_times), np.min(matrix_trans_times)))
 
+"""
 value_times = pd.DataFrame(value_trans_times, columns = ['6x 3-tensor'])
 value_times['6x 3-tensor'] = value_times['6x 3-tensor']
 value_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'b', alpha  = 0.5)
@@ -271,18 +274,19 @@ cupymatrix_times = pd.DataFrame(cupy_matrix_create_times, columns = ['6x3 cupy(r
 cupymatrix_times['6x3 cupy(rand)'] = cupymatrix_times[cupymatrix_times['6x3 cupy(rand)'] < 1.0]
 cupymatrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'orange', alpha  = 0.5)
 print("CUPYMat Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(cupy_matrix_create_times), np.mean(cupy_matrix_create_times), np.std(cupy_matrix_create_times), np.max(cupy_matrix_create_times), np.min(cupy_matrix_create_times)))
+"""
 
 cpu_pinned_matrix_times = pd.DataFrame(cpu_pinned_create_times, columns = ['6x3 cpu pinned'])
 cpu_pinned_matrix_times['6x3 cpu pinned'] = cpu_pinned_matrix_times[cpu_pinned_matrix_times['6x3 cpu pinned'] < 1.0]
 cpu_pinned_matrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'pink', alpha  = 0.5)
 print("CPU Pinned Times: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(cpu_pinned_create_times), np.mean(cpu_pinned_create_times), np.std(cpu_pinned_create_times), np.max(cpu_pinned_create_times), np.min(cpu_pinned_create_times)))
 
-
+"""
 cpu_pinned_st_matrix_times = pd.DataFrame(storch_cpu_pinned_create_times, columns = ['6x3 CPUPinn ST'])
 cpu_pinned_st_matrix_times['6x3 CPUPinn ST'] = cpu_pinned_st_matrix_times[cpu_pinned_st_matrix_times['6x3 CPUPinn ST'] < 1.0]
 cpu_pinned_st_matrix_times.plot.hist(ax = ax, bins = 400, logx = logx, logy=logy, color = 'turquoise', alpha  = 0.5, title = 'Transfer Times for float64\n{} CPU\n {} GPU'.format(cpu,gpu))
 print("ST CPU Pinned: points: {}, mean: {}, std: {}, max: {}, min: {}".format(len(storch_cpu_pinned_create_times), np.mean(storch_cpu_pinned_create_times), np.std(storch_cpu_pinned_create_times), np.max(storch_cpu_pinned_create_times), np.min(storch_cpu_pinned_create_times)))
-
+"""
 
 plt.show()
 
